@@ -7,6 +7,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -25,10 +26,14 @@ public class MonsterGame {
 
         TextGraphics textGraphics = terminal.newTextGraphics();
 
+//        playIntro(textGraphics, terminal);
+
         Position player = new Position(40,3);
         final char playerCharacter = '\u2661';
         final char block = '\u2588';
         final char monster = '\u2620';
+        final char pointChar = 'O';
+        int pointsCollected = 0;
         terminal.setCursorPosition(player.x, player.y);
         terminal.putCharacter(playerCharacter);
 
@@ -41,11 +46,17 @@ public class MonsterGame {
         drawObstacles(obstacles, terminal, block);
 
 
+
+
 //        Random r = new Random();
 //        Position monPos = new Position(r.nextInt(40,80), r.nextInt(24));;
         Position monPos = new Position(77, 22);
         terminal.setCursorPosition(monPos.x, monPos.y);
         terminal.putCharacter(monster);
+
+        // Spawn points
+        List<Position> pointsArray = spawnPoints();
+        generatePointsObjects(obstacles, pointsArray, pointChar, terminal);
 
         terminal.flush();
 
@@ -84,6 +95,12 @@ public class MonsterGame {
             else {
                 moveObject(oldX, oldY, player, playerCharacter, terminal);
             }
+            // check if acquired point, give him the point, move the objects around to new locations
+            if (playerFoundPoint(terminal, pointsArray, player)) {
+                pointsCollected++;
+                generatePointsObjects(obstacles, pointsArray, pointChar, terminal);
+                terminal.flush();
+            }
 
             // MONSTER MOVEMENT
             int monOldX = monPos.x;
@@ -102,7 +119,7 @@ public class MonsterGame {
 
             // check if playerCharacter runs into the monster
             if (monPos.x == player.x && monPos.y == player.y) {
-                endGame(terminal, 5, textGraphics);
+                endGame(terminal, pointsCollected, textGraphics);
                 continueReadingInput = false;
             }
 
@@ -110,7 +127,56 @@ public class MonsterGame {
         }
     }
 
-    private static void endGame(Terminal terminal, int points, TextGraphics textGraphics) throws IOException, InterruptedException {
+    private static void playIntro(TextGraphics textGraphics, Terminal terminal) throws IOException, InterruptedException {
+        terminal.clearScreen(); //30.6
+        textGraphics.putString(30, 6, "Game Over!", SGR.BOLD);
+        textGraphics.putString(30, 7, "Scored Points: " , SGR.BOLD);
+        for (int i = 5; i >= 0; i--) {
+            terminal.flush();
+            textGraphics.putString(30, 8, "Closing game in: " + i, SGR.BOLD);
+            Thread.sleep(1000);
+        }
+        terminal.close();
+
+    }
+
+    private static boolean playerFoundPoint(Terminal terminal, List<Position> pointsArray, Position player) {
+        Random r = new Random();
+        for (Position point : pointsArray) {
+            if (player.x == point.x && player.y == point.y) {
+                pointsArray.remove(point);
+                pointsArray.add(new Position(r.nextInt(4,77), r.nextInt(5,21)));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void generatePointsObjects(List<Position> obstacles, List<Position> pointsArray, char pointChar, Terminal terminal) throws IOException {
+        boolean isThereObstacle = false;
+        for (Position point : pointsArray) {
+            for (Position obstacle : obstacles) {
+                if ((point.x == obstacle.x && point.y == obstacle.y)) {
+                    isThereObstacle = true;
+                }
+            }
+            if (!isThereObstacle) {
+                terminal.setCursorPosition(point.x, point.y);
+                terminal.putCharacter(pointChar);
+            }
+        }
+    }
+
+    public static List<Position> spawnPoints() {
+        Random r = new Random();
+        List<Position> list = new ArrayList<>();
+        list.add(new Position(r.nextInt(4,77), r.nextInt(5,21)));
+        list.add(new Position(r.nextInt(4,77), r.nextInt(5,21)));
+        list.add(new Position(r.nextInt(4,77), r.nextInt(5,21)));
+        return list;
+    }
+
+    public static void endGame(Terminal terminal, int points, TextGraphics textGraphics) throws IOException, InterruptedException {
         terminal.clearScreen(); //30.6
         textGraphics.putString(30, 6, "Game Over!", SGR.BOLD);
         textGraphics.putString(30, 7, "Scored Points: " + points, SGR.BOLD);
@@ -123,7 +189,7 @@ public class MonsterGame {
 
     }
 
-    private static void drawObstacles(List<Position> obstacles, Terminal terminal, char block) throws IOException {
+    public static void drawObstacles(List<Position> obstacles, Terminal terminal, char block) throws IOException {
         for (Position p : obstacles) {
             terminal.setCursorPosition(p.x, p.y);
             terminal.putCharacter(block);
@@ -157,7 +223,7 @@ public class MonsterGame {
             monPos.y++;
         }
     }
-    private static void helpMonMoveAroundObs(Position monPos, Position player, int monOldX, int monOldY, List<Position> obstacles) {
+    public static void helpMonMoveAroundObs(Position monPos, Position player, int monOldX, int monOldY, List<Position> obstacles) {
         // check if vertical obs
         for (Position obstacle : obstacles) {
             if ((monPos.y + 1) == obstacle.y || (monPos.y - 1) == obstacle.y) {
