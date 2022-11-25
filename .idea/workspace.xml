@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="978af2cc-27d8-417d-8aad-b36d71ffa89c" name="Changes" comment="Points cant spawn on obstacles anymore">
+    <list default="true" id="978af2cc-27d8-417d-8aad-b36d71ffa89c" name="Changes" comment="intro added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MonsterGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MonsterGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Obstacle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Obstacle.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +118,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669377612466</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="intro added">
+      <created>1669378733974</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1669378733974</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -142,6 +150,7 @@
     <MESSAGE value="2 monsters" />
     <MESSAGE value="added template for obst" />
     <MESSAGE value="Points cant spawn on obstacles anymore" />
-    <option name="LAST_COMMIT_MESSAGE" value="Points cant spawn on obstacles anymore" />
+    <MESSAGE value="intro added" />
+    <option name="LAST_COMMIT_MESSAGE" value="intro added" />
   </component>
 </project>

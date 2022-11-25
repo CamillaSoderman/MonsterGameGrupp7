@@ -1,6 +1,7 @@
 package org.example;
 
 import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
@@ -31,15 +32,21 @@ public class MonsterGame {
         final char block = '\u2588';
         final char monster = '\u2620';
         final char pointChar = 'O';
+        final char portalChar = 'X';
         playIntro(textGraphics, terminal, monster, pointChar);
         int pointsCollected = 0;
 
+        // generate portal
+        generatePortals(terminal, portalChar);
+
         //generate player
+        terminal.setForegroundColor(TextColor.ANSI.RED);
         Position player = new Position(40,3);
         terminal.setCursorPosition(player.x, player.y);
         terminal.putCharacter(playerCharacter);
 
         // Create Obstacles and Border
+        terminal.setForegroundColor(TextColor.ANSI.WHITE);
         Obstacle obstacleObject = new Obstacle();
         List<Position> obstacles = obstacleObject.obstacles;
         Random r = new Random();
@@ -50,6 +57,7 @@ public class MonsterGame {
         terminal.flush();
 
         //Monster instantiations
+        terminal.setForegroundColor(TextColor.ANSI.YELLOW);
         Position monPos1 = new Position(77, 22);
         terminal.setCursorPosition(monPos1.x, monPos1.y);
         terminal.putCharacter(monster);
@@ -59,6 +67,7 @@ public class MonsterGame {
         terminal.putCharacter(monster);
 
         // Spawn points
+        terminal.setForegroundColor(TextColor.ANSI.GREEN);
         List<Position> pointsArray = spawnPoints(obstacles);
         generatePointsObjects(obstacles, pointsArray, pointChar, terminal);
 
@@ -97,6 +106,7 @@ public class MonsterGame {
                 player.y = oldY;
             }
             else {
+                terminal.setForegroundColor(TextColor.ANSI.RED);
                 moveObject(oldX, oldY, player, playerCharacter, terminal);
             }
             // check if acquired point, give him the point, move the objects around to new locations
@@ -105,6 +115,8 @@ public class MonsterGame {
                 generatePointsObjects(obstacles, pointsArray, pointChar, terminal);
                 terminal.flush();
             }
+            // Check if activated portal
+            teleportPlayerIfOnPortal(terminal, player, playerCharacter);
 
             // MONSTER MOVEMENT
             int monOldX1 = monPos1.x;
@@ -117,6 +129,7 @@ public class MonsterGame {
             setMonsterCoordinates(monPos2, player);
             boolean monsterCrash2 = checkForObstacleCrash(obstacles, monPos2);
             // helps monster move around obstacle when hitting it
+            terminal.setForegroundColor(TextColor.ANSI.YELLOW);
             if (monsterCrash1) {
                 helpMonMoveAroundObs(monPos1, player, monOldX1, monOldY1, obstacles);
                 moveObject(monOldX1, monOldY1, monPos1, monster, terminal);
@@ -134,6 +147,7 @@ public class MonsterGame {
 
             }
             // redraw point objects just in case monster stepped on it
+            terminal.setForegroundColor(TextColor.ANSI.GREEN);
             generatePointsObjects(obstacles, pointsArray, pointChar, terminal);
 
             // check if playerCharacter runs into the monster
@@ -141,10 +155,29 @@ public class MonsterGame {
                 endGame(terminal, pointsCollected, textGraphics);
                 continueReadingInput = false;
             }
-
             terminal.flush();
         }
     }
+
+    private static void generatePortals(Terminal terminal, char portalChar) throws IOException {
+        terminal.setForegroundColor(TextColor.ANSI.CYAN);
+        Position portal1 = new Position(10,3);
+        Position portal2 = new Position(70,21);
+        Position portal3 = new Position(70,3);
+        Position portal4 = new Position(10,21);
+        Position portal5 = new Position(40,12);
+        terminal.setCursorPosition(portal1.x, portal1.y);
+        terminal.putCharacter(portalChar);
+        terminal.setCursorPosition(portal2.x, portal2.y);
+        terminal.putCharacter(portalChar);
+        terminal.setCursorPosition(portal3.x, portal3.y);
+        terminal.putCharacter(portalChar);
+        terminal.setCursorPosition(portal4.x, portal4.y);
+        terminal.putCharacter(portalChar);
+        terminal.setCursorPosition(portal5.x, portal5.y);
+        terminal.putCharacter(portalChar);
+    }
+
 
     private static void playIntro(TextGraphics textGraphics, Terminal terminal, char monster, char points) throws IOException {
         textGraphics.putString(10, 6, "Welcome to Space Invader Extreme Terminator Blob Collector 9000", SGR.BOLD);
@@ -267,7 +300,7 @@ public class MonsterGame {
     public static void helpMonMoveAroundObs(Position monPos, Position player, int monOldX, int monOldY, List<Position> obstacles) {
         // check if vertical obs
         for (Position obstacle : obstacles) {
-            if ((monPos.y + 1) == obstacle.y || (monPos.y - 1) == obstacle.y) {
+            if (((monPos.y + 1) == obstacle.y) && (monPos.x == obstacle.x) || ((monPos.y - 1) == obstacle.y) && (monPos.x == obstacle.x)) {
                 if (player.y > monPos.y) {
                     monPos.y = monOldY +1;
                     monPos.x = monOldX;
@@ -281,7 +314,7 @@ public class MonsterGame {
                     monPos.x = monOldX;
                     break;
                 }
-            } else if (((monPos.x + 1) == obstacle.x || (monPos.x - 1) == obstacle.x)) {
+            } else if (((monPos.x + 1) == obstacle.x) && (monPos.y == obstacle.y) || ((monPos.x - 1) == obstacle.x) && (monPos.y == obstacle.y)) {
                 if (player.x > monPos.x) {
                     monPos.x = monOldX +1;
                     monPos.y = monOldY;
@@ -298,21 +331,85 @@ public class MonsterGame {
             }
 
         }
-//        if (!isVertical) {
-//                if (player.x > monPos.x) {
-//                    monPos.x = monOldX +1;
-//                    monPos.y = monOldY;
-//                } else if (player.x < monPos.x) {
-//                    monPos.x = monOldX -1;
-//                    monPos.y = monOldY;
-//                } else {
-//                    monPos.y = monOldY;
-//                    monPos.x = monOldX;
-//                }
-//        }
     }
-
-
+    public static void teleportPlayerIfOnPortal(Terminal terminal, Position player, char playerCharacter) throws IOException {
+        if (player.x == 10 && player.y == 3)  {
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(' ');
+            player.x = 70;
+            player.y = 21;
+            terminal.setForegroundColor(TextColor.ANSI.RED);
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(playerCharacter);
+            terminal.flush();
+        } else if (player.x == 70 && player.y == 21) {
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(' ');
+            player.x = 10;
+            player.y = 3;
+            terminal.setForegroundColor(TextColor.ANSI.RED);
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(playerCharacter);
+            terminal.flush();
+        } else if (player.x == 70 && player.y == 3) {
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(' ');
+            player.x = 10;
+            player.y = 21;
+            terminal.setForegroundColor(TextColor.ANSI.RED);
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(playerCharacter);
+            terminal.flush();
+        } else if (player.x == 10 && player.y == 21){
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(' ');
+            player.x = 70;
+            player.y = 3;
+            terminal.setForegroundColor(TextColor.ANSI.RED);
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(playerCharacter);
+            terminal.flush();
+        } else if (player.x == 40 && player.y == 12) {
+            terminal.setCursorPosition(player.x, player.y);
+            terminal.putCharacter(' ');
+            Random r = new Random();
+            int randomPortal = r.nextInt(1,5);
+            switch (randomPortal) {
+                case 1:
+                    player.x = 70;
+                    player.y = 21;
+                    terminal.setForegroundColor(TextColor.ANSI.RED);
+                    terminal.setCursorPosition(player.x, player.y);
+                    terminal.putCharacter(playerCharacter);
+                    terminal.flush();
+                    break;
+                case 2:
+                    player.x = 10;
+                    player.y = 3;
+                    terminal.setForegroundColor(TextColor.ANSI.RED);
+                    terminal.setCursorPosition(player.x, player.y);
+                    terminal.putCharacter(playerCharacter);
+                    terminal.flush();
+                    break;
+                case 3:
+                    player.x = 10;
+                    player.y = 21;
+                    terminal.setForegroundColor(TextColor.ANSI.RED);
+                    terminal.setCursorPosition(player.x, player.y);
+                    terminal.putCharacter(playerCharacter);
+                    terminal.flush();
+                    break;
+                case 4:
+                    player.x = 70;
+                    player.y = 3;
+                    terminal.setForegroundColor(TextColor.ANSI.RED);
+                    terminal.setCursorPosition(player.x, player.y);
+                    terminal.putCharacter(playerCharacter);
+                    terminal.flush();
+                    break;
+            }
+        }
+    }
 }
 
 
