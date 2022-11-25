@@ -57,7 +57,7 @@ public class MonsterGame {
         terminal.putCharacter(monster);
 
         // Spawn points
-        List<Position> pointsArray = spawnPoints();
+        List<Position> pointsArray = spawnPoints(obstacles);
         generatePointsObjects(obstacles, pointsArray, pointChar, terminal);
 
         terminal.flush();
@@ -98,7 +98,7 @@ public class MonsterGame {
                 moveObject(oldX, oldY, player, playerCharacter, terminal);
             }
             // check if acquired point, give him the point, move the objects around to new locations
-            if (playerFoundPoint(terminal, pointsArray, player)) {
+            if (playerFoundPoint(obstacles, pointsArray, player)) {
                 pointsCollected++;
                 generatePointsObjects(obstacles, pointsArray, pointChar, terminal);
                 terminal.flush();
@@ -154,12 +154,25 @@ public class MonsterGame {
 
     }
 
-    private static boolean playerFoundPoint(Terminal terminal, List<Position> pointsArray, Position player) {
+    private static boolean playerFoundPoint(List<Position> obstacles, List<Position> pointsArray, Position player) {
         Random r = new Random();
         for (Position point : pointsArray) {
             if (player.x == point.x && player.y == point.y) {
                 pointsArray.remove(point);
-                pointsArray.add(new Position(r.nextInt(4,77), r.nextInt(5,21)));
+                while (true) {
+                    Position potentialPoint = new Position(r.nextInt(4,77), r.nextInt(5,21));
+                    boolean crashWithObstacle = false;
+                    for (Position obstacle : obstacles) {
+                        if (potentialPoint.x == obstacle.x && potentialPoint.y == obstacle.y) {
+                            crashWithObstacle = true;
+                            break;
+                        }
+                    }
+                    if (!crashWithObstacle) {
+                        pointsArray.add(potentialPoint);
+                        break;
+                    }
+                }
                 return true;
             }
         }
@@ -181,12 +194,22 @@ public class MonsterGame {
         }
     }
 
-    public static List<Position> spawnPoints() {
+    public static List<Position> spawnPoints(List<Position> obstacles) {
         Random r = new Random();
         List<Position> list = new ArrayList<>();
-        list.add(new Position(r.nextInt(4,77), r.nextInt(5,21)));
-        list.add(new Position(r.nextInt(4,77), r.nextInt(5,21)));
-        list.add(new Position(r.nextInt(4,77), r.nextInt(5,21)));
+        while (list.size() != 3) {
+            Position potentialPoint = new Position(r.nextInt(4,77), r.nextInt(5,21));
+            boolean crashWithObstacle = false;
+            for (Position obstacle : obstacles) {
+                if (potentialPoint.x == obstacle.x && potentialPoint.y == obstacle.y) {
+                    crashWithObstacle = true;
+                    break;
+                }
+            }
+            if (!crashWithObstacle) {
+                list.add(potentialPoint);
+            }
+        }
         return list;
     }
 
