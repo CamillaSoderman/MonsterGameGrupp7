@@ -39,31 +39,22 @@ public class MonsterGame {
 
         // Create Obstacles and Border
         Obstacle obstacleObject = new Obstacle();
-//        obstacleObject.createBorders();
         List<Position> obstacles = obstacleObject.obstacles;
-        obstacleObject.addObstacle();
+        Random r = new Random();
+        int randomNumber = r.nextInt(1,4);
+        obstacleObject.addObstacle(randomNumber);
         obstacleObject.createBorders();
         drawObstacles(obstacles, terminal, block);
+        terminal.flush();
 
+        //Monster instantiations
+        Position monPos1 = new Position(77, 22);
+        terminal.setCursorPosition(monPos1.x, monPos1.y);
+        terminal.putCharacter(monster);
 
-
-
-//        Random r = new Random();
-//        Position monPos = new Position(r.nextInt(40,80), r.nextInt(24));;
-
-
-       // char[] mon = new char[]{monster1, monster2};
-        //for(int i= 0; i<mon.length; i++) {
-
-
-            Position monPos1 = new Position(77, 22);
-            terminal.setCursorPosition(monPos1.x, monPos1.y);
-            terminal.putCharacter(monster);
-
-
-            Position monPos2 = new Position(2, 22);
-            terminal.setCursorPosition(monPos2.x, monPos2.y);
-            terminal.putCharacter(monster);
+        Position monPos2 = new Position(2, 22);
+        terminal.setCursorPosition(monPos2.x, monPos2.y);
+        terminal.putCharacter(monster);
 
         // Spawn points
         List<Position> pointsArray = spawnPoints();
