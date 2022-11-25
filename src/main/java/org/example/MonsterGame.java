@@ -5,6 +5,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -24,9 +25,12 @@ public class MonsterGame {
         Position player = new Position(40,3);
         final char playerCharacter = '\u2661';
         final char block = '\u2588';
-        final char monster = '\u2620';
+       char monster = '\u2620';
         terminal.setCursorPosition(player.x, player.y);
         terminal.putCharacter(playerCharacter);
+
+        //Monster monsters = new Monster();
+        //monsters.getMonster();
 
         // Create Obstacles and Border
         Obstacle obstacleObject = new Obstacle();
@@ -39,11 +43,23 @@ public class MonsterGame {
 
 //        Random r = new Random();
 //        Position monPos = new Position(r.nextInt(40,80), r.nextInt(24));;
-        Position monPos = new Position(77, 22);
-        terminal.setCursorPosition(monPos.x, monPos.y);
-        terminal.putCharacter(monster);
 
-        terminal.flush();
+
+       // char[] mon = new char[]{monster1, monster2};
+        //for(int i= 0; i<mon.length; i++) {
+
+
+            Position monPos1 = new Position(77, 22);
+            terminal.setCursorPosition(monPos1.x, monPos1.y);
+            terminal.putCharacter(monster);
+
+
+            Position monPos2 = new Position(2, 22);
+            terminal.setCursorPosition(monPos2.x, monPos2.y);
+            terminal.putCharacter(monster);
+
+            terminal.flush();
+        //}
 
         boolean continueReadingInput = true;
         while (continueReadingInput) {
@@ -82,24 +98,37 @@ public class MonsterGame {
             }
 
             // MONSTER MOVEMENT
-            int monOldX = monPos.x;
-            int monOldY = monPos.y;
+            int monOldX1 = monPos1.x;
+            int monOldY1 = monPos1.y;
+            int monOldX2 = monPos2.x;
+            int monOldY2 = monPos2.y;
 
-            setMonsterCoordinates(monPos, player);
-            boolean monsterCrash = checkForObstacleCrash(obstacles, monPos);
-
+            setMonsterCoordinates(monPos1, player);
+            boolean monsterCrash1 = checkForObstacleCrash(obstacles, monPos1);
+            setMonsterCoordinates(monPos2, player);
+            boolean monsterCrash2 = checkForObstacleCrash(obstacles, monPos2);
             // helps monster move around obstacle when hitting it
-            if (monsterCrash) {
-                helpMonMoveAroundObs(monPos, player, monOldX, monOldY, obstacles);
-                moveObject(monOldX, monOldY, monPos, monster, terminal);
+            if (monsterCrash1) {
+                helpMonMoveAroundObs(monPos1, player, monOldX1, monOldY1, obstacles);
+                moveObject(monOldX1, monOldY1, monPos1, monster, terminal);
+
             } else {
-                moveObject(monOldX, monOldY, monPos, monster, terminal);
+                moveObject(monOldX1, monOldY1, monPos1, monster, terminal);
+
             }
 
+            if(monsterCrash2) {
+                helpMonMoveAroundObs(monPos2, player, monOldX2, monOldY2, obstacles);
+                moveObject(monOldX2, monOldY2, monPos2, monster, terminal);
+            }else{
+                moveObject(monOldX2, monOldY2, monPos2, monster, terminal);
+
+            }
             // check if playerCharacter runs into the monster
-            if (monPos.x == player.x && monPos.y == player.y) {
+            if (monPos1.x == player.x && monPos1.y == player.y||monPos2.x == player.x && monPos2.y == player.y) {
                 terminal.close();
                 continueReadingInput = false;
+
             }
 
             terminal.flush();
