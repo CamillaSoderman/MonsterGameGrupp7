@@ -30,6 +30,9 @@ public class Obstacle {
         for(int i = 6;i<18;i++){
             this.obstacles.add(new Position(40, i));
         }
+        for(int i = 6;i<18;i++){
+            this.obstacles.add(new Position(60, i));
+        }
     }
 //    private static List<Position> generateObstacles(Terminal terminal) {
 //        List<Position> obstacles = new ArrayList<>();

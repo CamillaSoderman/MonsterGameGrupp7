@@ -1,5 +1,7 @@
 package org.example;
 
+import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
@@ -20,6 +22,8 @@ public class MonsterGame {
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
         Terminal terminal = terminalFactory.createTerminal();
         terminal.setCursorVisible(false);
+
+        TextGraphics textGraphics = terminal.newTextGraphics();
 
         Position player = new Position(40,3);
         final char playerCharacter = '\u2661';
@@ -98,12 +102,25 @@ public class MonsterGame {
 
             // check if playerCharacter runs into the monster
             if (monPos.x == player.x && monPos.y == player.y) {
-                terminal.close();
+                endGame(terminal, 5, textGraphics);
                 continueReadingInput = false;
             }
 
             terminal.flush();
         }
+    }
+
+    private static void endGame(Terminal terminal, int points, TextGraphics textGraphics) throws IOException, InterruptedException {
+        terminal.clearScreen(); //30.6
+        textGraphics.putString(30, 6, "Game Over!", SGR.BOLD);
+        textGraphics.putString(30, 7, "Scored Points: " + points, SGR.BOLD);
+        for (int i = 5; i >= 0; i--) {
+            terminal.flush();
+            textGraphics.putString(30, 8, "Closing game in: " + i, SGR.BOLD);
+            Thread.sleep(1000);
+        }
+        terminal.close();
+
     }
 
     private static void drawObstacles(List<Position> obstacles, Terminal terminal, char block) throws IOException {
@@ -174,18 +191,6 @@ public class MonsterGame {
             }
 
         }
-//        if (!isVertical) {
-//                if (player.x > monPos.x) {
-//                    monPos.x = monOldX +1;
-//                    monPos.y = monOldY;
-//                } else if (player.x < monPos.x) {
-//                    monPos.x = monOldX -1;
-//                    monPos.y = monOldY;
-//                } else {
-//                    monPos.y = monOldY;
-//                    monPos.x = monOldX;
-//                }
-//        }
     }
 
 
