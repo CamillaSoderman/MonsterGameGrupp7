@@ -111,7 +111,7 @@ public class MonsterGame {
     }
 
     private static void endGame(Terminal terminal, int points, TextGraphics textGraphics) throws IOException, InterruptedException {
-        terminal.clearScreen(); //30.6
+        terminal.clearScreen(); //30.6.
         textGraphics.putString(30, 6, "Game Over!", SGR.BOLD);
         textGraphics.putString(30, 7, "Scored Points: " + points, SGR.BOLD);
         for (int i = 5; i >= 0; i--) {
