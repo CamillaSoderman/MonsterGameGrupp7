@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="978af2cc-27d8-417d-8aad-b36d71ffa89c" name="Changes" comment="added template for obst">
+    <list default="true" id="978af2cc-27d8-417d-8aad-b36d71ffa89c" name="Changes" comment="Points cant spawn on obstacles anymore">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MonsterGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MonsterGame.java" afterDir="false" />
     </list>
@@ -110,7 +110,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669373378846</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Points cant spawn on obstacles anymore">
+      <created>1669377612466</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1669377612466</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -134,6 +141,7 @@
     <MESSAGE value="Monster saved" />
     <MESSAGE value="2 monsters" />
     <MESSAGE value="added template for obst" />
-    <option name="LAST_COMMIT_MESSAGE" value="added template for obst" />
+    <MESSAGE value="Points cant spawn on obstacles anymore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Points cant spawn on obstacles anymore" />
   </component>
 </project>

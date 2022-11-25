@@ -3,6 +3,7 @@ package org.example;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
@@ -26,14 +27,15 @@ public class MonsterGame {
 
         TextGraphics textGraphics = terminal.newTextGraphics();
 
-//        playIntro(textGraphics, terminal);
-
-        Position player = new Position(40,3);
         final char playerCharacter = '\u2661';
         final char block = '\u2588';
         final char monster = '\u2620';
         final char pointChar = 'O';
+        playIntro(textGraphics, terminal, monster, pointChar);
         int pointsCollected = 0;
+
+        //generate player
+        Position player = new Position(40,3);
         terminal.setCursorPosition(player.x, player.y);
         terminal.putCharacter(playerCharacter);
 
@@ -131,6 +133,9 @@ public class MonsterGame {
                 moveObject(monOldX2, monOldY2, monPos2, monster, terminal);
 
             }
+            // redraw point objects just in case monster stepped on it
+            generatePointsObjects(obstacles, pointsArray, pointChar, terminal);
+
             // check if playerCharacter runs into the monster
             if ((monPos1.x == player.x && monPos1.y == player.y)||(monPos2.x == player.x && monPos2.y == player.y)) {
                 endGame(terminal, pointsCollected, textGraphics);
@@ -141,17 +146,16 @@ public class MonsterGame {
         }
     }
 
-    private static void playIntro(TextGraphics textGraphics, Terminal terminal) throws IOException, InterruptedException {
-        terminal.clearScreen(); //30.6
-        textGraphics.putString(30, 6, "Game Over!", SGR.BOLD);
-        textGraphics.putString(30, 7, "Scored Points: " , SGR.BOLD);
-        for (int i = 5; i >= 0; i--) {
-            terminal.flush();
-            textGraphics.putString(30, 8, "Closing game in: " + i, SGR.BOLD);
-            Thread.sleep(1000);
+    private static void playIntro(TextGraphics textGraphics, Terminal terminal, char monster, char points) throws IOException {
+        textGraphics.putString(10, 6, "Welcome to Space Invader Extreme Terminator Blob Collector 9000", SGR.BOLD);
+        textGraphics.putString(30, 8, monster + " Monster bad! RUN! " , SGR.BOLD);
+        textGraphics.putString(30, 9, points + " Blobs good! Collect!" , SGR.BOLD);
+        textGraphics.putString(20, 12, "Press any letter to start! Good Luck!" , SGR.BOLD);
+        KeyStroke keyStroke;
+        keyStroke = terminal.readInput();
+        if (keyStroke.getKeyType() == KeyType.Character)  {
+            terminal.clearScreen();
         }
-        terminal.close();
-
     }
 
     private static boolean playerFoundPoint(List<Position> obstacles, List<Position> pointsArray, Position player) {
